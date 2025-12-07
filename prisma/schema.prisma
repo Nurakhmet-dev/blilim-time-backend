@@ -7,3 +7,28 @@ generator client {
 datasource db {
     provider = "postgresql"
 }
+
+model User {
+    id String @id @unique @default(uuid())
+
+    name      String
+    avatarUrl String? @default("/assets/users/default-avatar.jpg") @map("avatar_url")
+
+    phone    String  @unique
+    email    String? @unique
+    password String
+
+    role Role @default(STUDENT)
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("user")
+}
+
+enum Role {
+    STUDENT
+    CURATOR
+    ADMIN
+    SUPER_ADMIN
+}

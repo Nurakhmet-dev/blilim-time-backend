@@ -9,7 +9,6 @@ export class RedisService extends Redis {
 		const redisOptions: RedisOptions = {
 			port: configService.getOrThrow<number>('REDIS_PORT'),
 			host: configService.getOrThrow<string>('REDIS_HOST'),
-			username: configService.getOrThrow<string>('REDIS_USERNAME'),
 			password: configService.getOrThrow<string>('REDIS_PASSWORD')
 		}
 

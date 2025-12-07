@@ -8,6 +8,7 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { getGraphQLConfig } from './config/graphql.config'
 import { PrismaModule } from './prisma/prisma.module'
 import { RedisModule } from './redis/redis.module'
+import { AccountModule } from 'src/modules/auth/account/account.module'
 
 @Module({
 	imports: [
@@ -24,7 +25,8 @@ import { RedisModule } from './redis/redis.module'
 		}),
 
 		PrismaModule,
-		RedisModule
+		RedisModule,
+        AccountModule
 	]
 })
 export class CoreModule {}
