@@ -1,14 +1,14 @@
-import { IS_DEV_NODE } from 'src/shared/utils/is-dev.utils'
-
+import { getGraphQLConfig } from '@core/config/graphql.config'
+import { PrismaModule } from '@core/prisma/prisma.module'
+import { AccountModule } from '@modules/auth/account/account.module'
+import { SessionModule } from '@modules/auth/session/session.module'
 import { ApolloDriver } from '@nestjs/apollo'
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { GraphQLModule } from '@nestjs/graphql'
+import { IS_DEV_NODE } from '@utils/is-dev.utils'
 
-import { getGraphQLConfig } from './config/graphql.config'
-import { PrismaModule } from './prisma/prisma.module'
 import { RedisModule } from './redis/redis.module'
-import { AccountModule } from 'src/modules/auth/account/account.module'
 
 @Module({
 	imports: [
@@ -25,8 +25,9 @@ import { AccountModule } from 'src/modules/auth/account/account.module'
 		}),
 
 		PrismaModule,
+		AccountModule,
 		RedisModule,
-        AccountModule
+		SessionModule
 	]
 })
 export class CoreModule {}

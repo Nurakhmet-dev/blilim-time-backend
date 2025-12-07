@@ -21,7 +21,7 @@ export class UserModel {
 	@Field(() => String)
 	phone: string
 
-	@Field(() => String, { nullable: true })
+	@Field(() => String)
 	email: string
 
 	@Field(() => String)

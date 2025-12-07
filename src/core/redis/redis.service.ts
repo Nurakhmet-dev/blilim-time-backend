@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import Redis, { RedisOptions } from 'ioredis'
 
 import { Injectable } from '@nestjs/common'
@@ -12,36 +15,28 @@ export class RedisService extends Redis {
 			password: configService.getOrThrow<string>('REDIS_PASSWORD')
 		}
 
-		if (
-			!redisOptions.port ||
-			!redisOptions.host ||
-			!redisOptions.password
-		) {
+		if (!redisOptions.port || !redisOptions.host || !redisOptions.password)
 			throw new Error('Missing required Redis configuration')
-		}
+
 		super(redisOptions)
 		this.on('error', err => {
 			throw new Error(`Redis connect Error: ${err}`)
 		})
 	}
+
 	private isExpirationObject(
 		obj: any
 	): obj is { expiration: { type: string; value: number } } {
-		// eslint-disable-next-line
 		return (
 			obj &&
 			typeof obj === 'object' &&
-			// eslint-disable-next-line
 			obj.expiration &&
-			// eslint-disable-next-line
 			typeof obj.expiration.type === 'string' &&
-			// eslint-disable-next-line
 			typeof obj.expiration.value === 'number'
 		)
 	}
 
 	public set(...args: any[]): Promise<any> {
-		// eslint-disable-next-line
 		const [key, value, options] = args
 
 		// Проверка и преобразование объекта опций TTL от connect-redis
@@ -52,13 +47,11 @@ export class RedisService extends Redis {
 			const newArgs = [key, value, type, expirationValue]
 
 			// Используем .apply() для передачи динамического массива аргументов
-			// eslint-disable-next-line
 			return super.set.apply(this, newArgs)
 		}
 
 		// Если это не объект опций TTL, вызываем оригинальный метод как есть
 		// Используем .apply() для безопасной передачи ...args
-		// eslint-disable-next-line
 		return super.set.apply(this, args)
 	}
 }

@@ -24,6 +24,7 @@ export const getSessionConfig = (
 	} as CookieOptions,
 	store: new RedisStore({
 		client: redis,
-		prefix: config.getOrThrow<string>('SESSION_FOLDER')
+		prefix: config.getOrThrow<string>('SESSION_FOLDER'),
+		ttl: 36000
 	})
 })

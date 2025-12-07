@@ -18,9 +18,8 @@ async function bootstrap() {
 
 	// App configs
 	app.use(cookieParser(config.getOrThrow('COOKIE_SECRET')))
-	app.useGlobalPipes(new ValidationPipe({ transform: true }))
 	app.use(session(getSessionConfig(config, redis)))
-
+	app.useGlobalPipes(new ValidationPipe({ transform: true }))
 	app.enableCors(getCorsConfig(config))
 
 	await app.listen(port)
