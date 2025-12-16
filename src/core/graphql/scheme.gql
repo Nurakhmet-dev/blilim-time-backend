@@ -26,7 +26,7 @@ type Mutation {
 }
 
 type Query {
-  findAll: [UserModel!]!
+  findProfile: UserModel!
 }
 
 """The role of the user"""
