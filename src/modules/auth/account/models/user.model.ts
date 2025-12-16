@@ -1,5 +1,6 @@
 import { Role } from 'src/core/generated/enums'
 
+import type { User } from '@core/generated/client'
 import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql'
 
 registerEnumType(Role, {
@@ -8,7 +9,7 @@ registerEnumType(Role, {
 })
 
 @ObjectType()
-export class UserModel {
+export class UserModel implements User {
 	@Field(() => ID)
 	id: string
 
