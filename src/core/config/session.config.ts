@@ -20,7 +20,7 @@ export const getSessionConfig = (
 		domain: config.getOrThrow<string>('SESSION_DOMAIN'),
 		maxAge: ms(config.getOrThrow<StringValue>('SESSION_MAX_AGE')),
 		httpOnly: parseBoolean(config.getOrThrow<string>('SESSION_HTTP_ONLY')),
-		sameSite: 'none'
+		sameSite: 'lax'
 	} as CookieOptions,
 	store: new RedisStore({
 		client: redis,

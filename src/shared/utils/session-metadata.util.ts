@@ -53,14 +53,10 @@ export const getSessionMetadata = (
 	const ip = IS_DEV_NODE ? '207.97.227.239' : req.ip
 	const location = geo.lookup(ip)
 
-	console.log('log from getSessionMetadata\n', 'location:', location)
-
 	if (!ip)
 		console.error('log from getSessionMetadata\n', 'error: ip not found')
 
 	const userAgent = useragent.parse(req.headers['user-agent'])
-
-	console.log('log from getSessionMetadata\n', 'User agent:', userAgent)
 
 	const os = userAgent.os || extractOS(userAgent.full)
 	const deviceType = detectDeviceType(userAgent.full)

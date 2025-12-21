@@ -8,27 +8,158 @@ datasource db {
     provider = "postgresql"
 }
 
+// --- ПОЛЬЗОВАТЕЛИ ---
 model User {
-    id String @id @unique @default(uuid())
+    id String @id @default(uuid())
 
-    name      String
+    name      String?
     avatarUrl String? @default("/assets/users/default-avatar.jpg") @map("avatar_url")
 
     phone    String  @unique
     email    String? @unique
     password String
 
-    role Role @default(STUDENT)
+    role Role @default(USER)
 
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
+    // Связи студента
+    purchaseTests    Test[]
+    purchaseSubjects Subject[]
+    testResults      TestResult[]
+    groupId          String?      @map("group_id")
+    group            Group?       @relation("StudentInGroup", fields: [groupId], references: [id])
 
+    // Связи куратора
+    managedGroups Group[] @relation("CuratorGroups")
+
+    createdAt DateTime @default(now())
+
+    @@index([role]) // Индекс для быстрой фильтрации пользователей по ролям (админом)
     @@map("user")
 }
 
+// --- СТРУКТУРА ОБУЧЕНИЯ ---
+model Subject {
+    id        String     @id @default(uuid())
+    title     String     @unique
+    price     Int        @default(0)
+    userId    String     @map("user_id")
+    user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+    topics    Topic[]
+    lessons   Lesson[]
+    questions Question[]
+}
+
+model Topic {
+    id        String     @id @default(uuid())
+    title     String
+    subjectId String     @map("subject_id")
+    subject   Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+    lessons   Lesson[]
+    questions Question[]
+
+    @@index([subjectId])
+    @@map("topic")
+}
+
+model Lesson {
+    id        String  @id @default(uuid())
+    title     String
+    videoUrl  String?
+    content   String? @db.Text
+    subjectId String
+    subject   Subject @relation(fields: [subjectId], references: [id])
+    topicId   String?
+    topic     Topic?  @relation(fields: [topicId], references: [id])
+    tests     Test[] // Связь с ДЗ
+}
+
+// --- КОНТЕНТ ТЕСТОВ ---
+model Question {
+    id            String      @id @default(uuid())
+    text          String      @db.Text
+    image         String?
+    difficulty    Difficulty  @default(MEDIUM)
+    optionsType   OptionsType
+    options       String[] // Доступно в PostgreSQL (массив строк)
+    correctAnswer String
+    subjectId     String
+    subject       Subject     @relation(fields: [subjectId], references: [id])
+    topicId       String?
+    topic         Topic?      @relation(fields: [topicId], references: [id])
+    tests         Test[]      @relation("TestToQuestion")
+
+    @@index([subjectId])
+    @@index([topicId])
+    @@map("question")
+}
+
+model Test {
+    id        String       @id @default(uuid())
+    title     String
+    for       TestFor
+    maxTime   Int?
+    price     Int?         @default(0)
+    questions Question[]   @relation("TestToQuestion")
+    results   TestResult[]
+    userId    String       @map("user_id")
+    user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+    lessonId  String?
+    lesson    Lesson?      @relation(fields: [lessonId], references: [id])
+
+    @@index([for])
+    @@map("test")
+}
+
+model TestResult {
+    id          String   @id @default(uuid())
+    score       Int
+    totalPoints Int
+    lives       Int?
+    answers     Json // Prisma 7 отлично типизирует Json через интерфейсы в TS
+    userId      String
+    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    testId      String
+    test        Test     @relation(fields: [testId], references: [id])
+    createdAt   DateTime @default(now())
+
+    @@index([userId])
+    @@index([testId])
+    @@map("test_result")
+}
+
+model Group {
+    id        String   @id @default(uuid())
+    name      String
+    createdAt DateTime @default(now())
+    curatorId String
+    curator   User     @relation("CuratorGroups", fields: [curatorId], references: [id])
+    students  User[]   @relation("StudentInGroup")
+
+    @@index([curatorId])
+    @@map("group")
+}
+
 enum Role {
+    USER
     STUDENT
     CURATOR
     ADMIN
     SUPER_ADMIN
+}
+
+enum OptionsType {
+    Multiple //выберите лучший ответ из предложенных (A, B, C, D).
+    BOOLEAN // Верно/Неверно : Определите, является ли утверждение правильным или неправильным.
+}
+
+enum Difficulty {
+    EASY
+    MEDIUM
+    HARD
+}
+
+enum TestFor {
+    ENT
+    HOMEWORK
+    QUIZ
 }

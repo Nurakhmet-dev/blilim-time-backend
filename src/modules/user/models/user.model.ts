@@ -10,16 +10,22 @@ registerEnumType(Role, {
 
 @ObjectType()
 export class UserModel implements User {
-	@Field(() => ID)
+	@Field(() => String)
 	id: string
-
-	@Field(() => String, { nullable: true })
-	avatarUrl: string
 
 	@Field(() => String)
 	name: string
 
-	@Field(() => String)
+	@Field(() => String, {
+		name: 'avatar',
+		description: 'Url to image avatar',
+		nullable: true
+	})
+	avatarUrl: string
+
+	@Field(() => String, {
+		name: 'phone'
+	})
 	phone: string
 
 	@Field(() => String)
@@ -30,6 +36,9 @@ export class UserModel implements User {
 
 	@Field(() => Role)
 	role: Role
+
+	@Field(() => String, { nullable: true })
+	groupId: string
 
 	@Field(() => Date)
 	createdAt: Date

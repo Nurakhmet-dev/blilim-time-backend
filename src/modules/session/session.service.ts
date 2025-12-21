@@ -1,6 +1,7 @@
 import { verify } from 'argon2'
 import { Request } from 'express'
 
+import { User } from '@core/generated/client'
 import { PrismaService } from '@core/prisma/prisma.service'
 import { RedisService } from '@core/redis/redis.service'
 import {
@@ -13,15 +14,14 @@ import {
 import { ConfigService } from '@nestjs/config'
 import { getSessionMetadata } from '@shared/utils/session-metadata.util'
 
-import { LoginInput } from './inputs/login.input'
 import { SessionModel } from './models/session.model'
 
 @Injectable()
 export class SessionService {
 	constructor(
-		private readonly prisma: PrismaService,
-		private readonly config: ConfigService,
-		private readonly redis: RedisService
+		private readonly prismaService: PrismaService,
+		private readonly configService: ConfigService,
+		private readonly redisService: RedisService
 	) {}
 
 	public async findByUser(req: Request) {
@@ -29,12 +29,12 @@ export class SessionService {
 		if (!userId)
 			throw new NotFoundException('Пользватель не обнаружен в сессии')
 
-		const keys = (await this.redis.keys('*')) || []
+		const keys = (await this.redisService.keys('*')) || []
 
 		const userSessions: SessionModel[] = []
 
 		for (const key of keys) {
-			const sessionData = await this.redis.get(key)
+			const sessionData = await this.redisService.get(key)
 			if (sessionData) {
 				const session = JSON.parse(sessionData)
 				if (session.userId === userId) {
@@ -63,8 +63,8 @@ export class SessionService {
 	public async findCurrent(req: Request) {
 		const sessionId = req.session.id
 
-		const sessionData = await this.redis.get(
-			`${this.config.getOrThrow<string>('SESSION_FOLDER')}${sessionId}`
+		const sessionData = await this.redisService.get(
+			`${this.configService.getOrThrow<string>('SESSION_FOLDER')}${sessionId}`
 		)
 
 		if (!sessionData) {
@@ -80,20 +80,7 @@ export class SessionService {
 		}
 	}
 
-	public async login(req: Request, input: LoginInput) {
-		const { email, password } = input
-
-		const user = await this.prisma.user.findFirst({
-			where: {
-				OR: [{ name: { equals: email } }, { email: { equals: email } }]
-			}
-		})
-		if (!user) throw new NotFoundException('Пользватель не найден')
-
-		const isValidPassword = await verify(user.password, password)
-		if (!isValidPassword)
-			throw new UnauthorizedException('Неверный почта или пароль')
-
+	public async save(req: Request, user: User): Promise<User> {
 		const metadata = getSessionMetadata(req)
 
 		return new Promise((resolve, regect) => {
@@ -112,17 +99,18 @@ export class SessionService {
 			})
 		})
 	}
-	public async logout(req: Request) {
-		return new Promise((resolve, regect) => {
+
+	public async destroy(req: Request) {
+		return new Promise((resolve, reject) => {
 			req.session.destroy(error => {
 				if (error)
-					return regect(
+					return reject(
 						new InternalServerErrorException(
 							'Не удалось завершить сессию'
 						)
 					)
 				req.res?.clearCookie(
-					this.config.getOrThrow<string>('SESSION_NAME')
+					this.configService.getOrThrow<string>('SESSION_NAME')
 				)
 				resolve(true)
 			})
@@ -130,15 +118,17 @@ export class SessionService {
 	}
 
 	public async clearSession(req: Request) {
-		req.res?.clearCookie(this.config.getOrThrow<string>('SESSION_NAME'))
+		req.res?.clearCookie(
+			this.configService.getOrThrow<string>('SESSION_NAME')
+		)
 		return true
 	}
 	public async removeSession(req: Request, id: string) {
 		if (req.session.id === id)
 			throw new ConflictException('Текущую сессию удалить нельзя')
 
-		await this.redis.del(
-			`${this.config.getOrThrow<string>('SESSION_FOLDER')}${id}`
+		await this.redisService.del(
+			`${this.configService.getOrThrow<string>('SESSION_FOLDER')}${id}`
 		)
 		return true
 	}

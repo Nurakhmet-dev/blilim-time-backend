@@ -34,15 +34,16 @@ input LoginInput {
 
 type Mutation {
   clearSession: Boolean!
-  createUser(data: CreateUserInput!): Boolean!
   login(data: LoginInput!): UserModel!
   logout: Boolean!
+  register(data: CreateUserInput!): UserModel!
   removeSession(id: String!): Boolean!
 }
 
 type Query {
+  findAll: [UserModel!]!
+  findById: UserModel!
   findCurrentSession: SessionModel!
-  findProfile: UserModel!
   findSessionsByUser: [SessionModel!]!
 }
 
@@ -68,10 +69,12 @@ type SessionModel {
 }
 
 type UserModel {
-  avatarUrl: String
+  """Url to image avatar"""
+  avatar: String
   createdAt: DateTime!
   email: String!
-  id: ID!
+  groupId: String
+  id: String!
   name: String!
   password: String!
   phone: String!
