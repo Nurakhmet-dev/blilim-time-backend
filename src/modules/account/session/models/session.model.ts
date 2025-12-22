@@ -1,5 +1,9 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql'
-import { DeviceInfo, LocationInfo, SessionMetadata } from '@shared/types'
+import {
+	DeviceInfo,
+	LocationInfo,
+	SessionMetadata
+} from '@shared/types/session-metadata.types'
 
 @ObjectType()
 export class LocationModel implements LocationInfo {

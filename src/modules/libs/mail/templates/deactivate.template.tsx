@@ -2,34 +2,54 @@ import {Body, Head, Heading, Hr, Html, Link, Preview, Row, Section, Tailwind, Te
 import { SessionMetadata } from '@shared/types/session-metadata.types'
 import * as React from 'react'
 
-interface IPasswordRecoveryProps {
-    domain:string
+interface IDeactivateProps {
     token:string
     metadata:SessionMetadata
 }
 
-export default function PasswordRecovery({domain,token,metadata}:IPasswordRecoveryProps){
-    const resetLink = `http://${domain}/account/reset/?token=${token}`
+export default function Deactivate({
+    token,
+    metadata = {
+        device:{
+            browser:'',
+            os:'',
+            type:''
+        },
+        location:{
+            city:'',
+            country:'',
+            latidute:0,
+            longitude:0
+        },
+        ip:''
+
+    }
+}:IDeactivateProps){
     return (
         <Html>
              <Head/>
-             <Preview>Сброс пароля</Preview>
+             <Preview>Деактивация аккаунта</Preview>
              <Tailwind>
                  <Body className='font-sans w-full mx-auto p-6 bg-slate-50'>
                      <Section className='max-w-lg mb-8 text-center border border-2 border-blue-300 bg-blue-50 rounded-2xl'>
                          <Heading className='text-3xl text-black font-bold leading-none px-4'>
-                             Сброс пароля
+                             Запрос на деактивацию аккаунта
                          </Heading>
                          <Hr className='w-full block h-0.5 rounded bg-blue-300' />
                          <Section>
                             <Text className="text-black text-base mt-2">
-                                Вы запросили сброс пароля для вашей учетной записи. <br/>
-                                Чтобы создать новый пароль, нажмите на ссылку ниже:
+                            Вы инициировали процесс деактивации вашего аккаунта на платформе <b className='text-blue-500'>BilimTime</b>.
                             </Text>
-                             <Link href={resetLink}
-                                 className='inline-flex items-center justify-center rounded-full text-md font-semibold text-white bg-blue-700 py-2 px-16 mb-4'>
-                                 Сбросить пароль
-                             </Link>
+
+                            <Heading className='text-2xl text-black font-semibold leading-none px-4'>
+                                Код потверждения:
+                            </Heading>
+                             <Text className='text-2xl rounded-full border border-1 border-blue-300 py-3 px-8 mx-8'>
+                                    {token}
+                             </Text>
+                             <Text className='text-black'>
+                                    Этот код действителен в течение 5 минут.
+                             </Text>
                          </Section>
                          <Hr className='w-full block h-0.5 rounded bg-blue-300'/>
                          <Section>

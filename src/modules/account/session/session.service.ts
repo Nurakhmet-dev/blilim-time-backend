@@ -1,4 +1,4 @@
-import { Request } from 'express'
+import type { Request } from 'express'
 
 import { User } from '@core/generated/client'
 import { RedisService } from '@core/redis/redis.service'

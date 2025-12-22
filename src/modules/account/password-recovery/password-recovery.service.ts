@@ -1,15 +1,20 @@
-import { Request } from 'express'
+import { hash } from 'argon2'
+import type { Request } from 'express'
 
 import { TokenType } from '@core/generated/enums'
 import { PrismaService } from '@core/prisma/prisma.service'
 import { ResetPasswordInput } from '@modules/account/password-recovery/inputs/reset-password.input'
 import { MailService } from '@modules/libs/mail/mail.service'
-import { BadRequestException, Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common'
+import {
+	BadRequestException,
+	Injectable,
+	NotAcceptableException,
+	NotFoundException
+} from '@nestjs/common'
 import { generateToken } from '@shared/utils/generate-token.util'
 import { getMetadata } from '@shared/utils/session-metadata.util'
 
 import { NewPasswordInput } from './inputs/new-password.input'
-import { hash } from 'argon2'
 
 @Injectable()
 export class PasswordRecoveryService {
@@ -18,8 +23,8 @@ export class PasswordRecoveryService {
 		private readonly mailService: MailService
 	) {}
 
-	public async reset(req: Request, resetPasswordInput: ResetPasswordInput) {
-		const { email } = resetPasswordInput
+	public async reset(req: Request, input: ResetPasswordInput) {
+		const { email } = input
 
 		const user = await this.prismaService.user.findFirst({
 			where: {
@@ -46,8 +51,8 @@ export class PasswordRecoveryService {
 		return true
 	}
 
-	public async newPassword(newPasswordInput: NewPasswordInput) {
-		const { password, token } = newPasswordInput
+	public async newPassword(input: NewPasswordInput) {
+		const { password, token } = input
 		const existingToken = await this.prismaService.token.findUnique({
 			where: {
 				token,
@@ -77,6 +82,6 @@ export class PasswordRecoveryService {
 			}
 		})
 
-        return true
+		return true
 	}
 }

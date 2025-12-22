@@ -10,8 +10,8 @@ import { CreateUserInput } from './inputs/create-user.input'
 export class UserService {
 	constructor(private readonly prismaService: PrismaService) {}
 
-	async create(createUserInput: CreateUserInput) {
-		const { password, ...rest } = createUserInput
+	async create(input: CreateUserInput) {
+		const { password, ...rest } = input
 
 		const user = await this.prismaService.user.create({
 			data: {
@@ -32,7 +32,7 @@ export class UserService {
 		return users
 	}
 
-	//  update(id: number, updateUserInput: UpdateUserInput) {
+	//  update(id: number, input: UpdateUserInput) {
 	//    return `This action updates a #${id} user`;
 	//  }
 

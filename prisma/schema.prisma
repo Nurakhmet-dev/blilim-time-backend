@@ -19,8 +19,12 @@ model User {
     email    String @unique
     password String
 
-    isVerified      Boolean @default(false) @map("is_verified")
-    isEmailVerified Boolean @default(false) @map("is_email_verified")
+    isVerified      Boolean   @default(false) @map("is_verified")
+    isEmailVerified Boolean   @default(false) @map("is_email_verified")
+    isTotpEnable    Boolean   @default(false) @map("is_totp_enable")
+    totpSecret      String?   @map("totp_secret")
+    isDeactivated   Boolean   @default(false) @map("is_deactivated")
+    deactivateAt    DateTime? @map("deactivate_at")
 
     role Role @default(USER)
 
@@ -172,6 +176,7 @@ enum Role {
 enum TokenType {
     EMAIL_VERIFY
     PASSWORD_RESET
+    DEACTIVATE
 
     @@map("token_types")
 }

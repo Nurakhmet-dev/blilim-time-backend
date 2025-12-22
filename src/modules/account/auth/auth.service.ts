@@ -1,5 +1,6 @@
 import { verify } from 'argon2'
-import { Request } from 'express'
+import type { Request } from 'express'
+import { TOTP } from 'otpauth'
 
 import { PrismaService } from '@core/prisma/prisma.service'
 import { SessionService } from '@modules/account/session/session.service'
@@ -27,20 +28,20 @@ export class AuthService {
 	) {}
 
 	// authentification
-	public async register(createUserInput: CreateUserInput) {
+	public async register(input: CreateUserInput) {
 		const isUserPhoneExists = await this.prismaService.user.findUnique({
-			where: { phone: createUserInput.phone }
+			where: { phone: input.phone }
 		})
 		if (isUserPhoneExists)
 			throw new ConflictException('Этот номер уже зарегистрирован')
 
 		const isUserEmailExists = await this.prismaService.user.findUnique({
-			where: { email: createUserInput.email }
+			where: { email: input.email }
 		})
 		if (isUserEmailExists)
 			throw new ConflictException('Этот почта зарегистрирован')
 
-		const user = await this.userService.create(createUserInput)
+		const user = await this.userService.create(input)
 
 		await this.verificationService.sendVerificationToken(user)
 
@@ -48,18 +49,17 @@ export class AuthService {
 	}
 
 	// authorization
-	public async login(req: Request, loginInput: LoginInput) {
+	public async login(req: Request, input: LoginInput) {
+		const { email, password, pin } = input
+
 		const user = await this.prismaService.user.findFirst({
 			where: {
-				OR: [
-					{ name: { equals: loginInput.email } },
-					{ email: { equals: loginInput.email } }
-				]
+				OR: [{ name: { equals: email } }, { email: { equals: email } }]
 			}
 		})
 		if (!user) throw new NotFoundException('Пользватель не найден')
 
-		const isValidPassword = await verify(user.password, loginInput.password)
+		const isValidPassword = await verify(user.password, password)
 		if (!isValidPassword)
 			throw new UnauthorizedException('Неверный почта или пароль')
 
@@ -70,7 +70,28 @@ export class AuthService {
 			)
 		}
 
-		return await this.sessionService.save(req, user)
+		if (user.isTotpEnable) {
+			if (!pin) {
+				return {
+					message: 'Необхадим код для завершения авторизации'
+				}
+			}
+
+			const totp = new TOTP({
+				issuer: 'BilimTime',
+				label: `${user.email}`,
+				algorithm: 'SHA1',
+				digits: 6,
+				secret: `${user.totpSecret}`
+			})
+
+			const delta = totp.validate({ token: pin })
+			if (delta === null) throw new BadRequestException('Неверный код')
+		}
+
+		await this.sessionService.save(req, user)
+
+		return { user }
 	}
 
 	public async logout(req: Request, configService: ConfigService) {

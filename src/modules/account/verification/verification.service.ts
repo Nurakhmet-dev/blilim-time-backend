@@ -1,4 +1,4 @@
-import { Request } from 'express'
+import type { Request } from 'express'
 
 import { User } from '@core/generated/client'
 import { TokenType } from '@core/generated/enums'
@@ -11,7 +11,6 @@ import {
 	NotFoundException
 } from '@nestjs/common'
 import { generateToken } from '@shared/utils/generate-token.util'
-import { getMetadata } from '@shared/utils/session-metadata.util'
 
 import { VerificationInput } from './inputs/verivication.input'
 
@@ -23,8 +22,8 @@ export class VerificationService {
 		private readonly sessionService: SessionService
 	) {}
 
-	public async verify(req: Request, verificationInput: VerificationInput) {
-		const { token } = verificationInput
+	public async verify(req: Request, input: VerificationInput) {
+		const { token } = input
 		const existingToken = await this.prismaService.token.findUnique({
 			where: {
 				token,
@@ -54,7 +53,7 @@ export class VerificationService {
 			}
 		})
 
-        await this.sessionService.save(req, user)
+		await this.sessionService.save(req, user)
 		return true
 	}
 

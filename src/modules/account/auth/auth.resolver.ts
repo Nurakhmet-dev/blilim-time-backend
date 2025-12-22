@@ -1,13 +1,11 @@
 import { CreateUserInput } from '@modules/account/user/inputs/create-user.input'
-import { UserModel } from '@modules/account/user/models/user.model'
 import { ConfigService } from '@nestjs/config'
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql'
-import type { GqlContext } from '@shared/types'
-
-import { ResetPasswordInput } from '../password-recovery/inputs/reset-password.input'
+import type { GqlContext } from '@shared/types/graphql-context.types'
 
 import { AuthService } from './auth.service'
 import { LoginInput } from './inputs/login.input'
+import { AuthModel } from './models/auth.model'
 
 @Resolver('Auth')
 export class AuthResolver {
@@ -17,16 +15,16 @@ export class AuthResolver {
 	) {}
 
 	@Mutation(() => Boolean, { name: 'register' })
-	public register(@Args('data') createUserInput: CreateUserInput) {
-		return this.authService.register(createUserInput)
+	public register(@Args('data') input: CreateUserInput) {
+		return this.authService.register(input)
 	}
 
-	@Mutation(() => UserModel, { name: 'login' })
+	@Mutation(() => AuthModel, { name: 'login' })
 	public async login(
 		@Context() { req }: GqlContext,
-		@Args('data') loginInput: LoginInput
+		@Args('data') input: LoginInput
 	) {
-		return await this.authService.login(req, loginInput)
+		return await this.authService.login(req, input)
 	}
 
 	@Mutation(() => Boolean, { name: 'logout' })

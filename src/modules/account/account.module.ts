@@ -4,7 +4,9 @@ import { UserModule } from '@modules/account/user/user.module'
 import { MailModule } from '@modules/libs/mail/mail.module'
 import { Module } from '@nestjs/common'
 
+import { DeactivateModule } from './deactivate/deactivate.module'
 import { PasswordRecoveryModule } from './password-recovery/password-recovery.module'
+import { TotpModule } from './totp/totp.module'
 import { VerificationModule } from './verification/verification.module'
 
 @Module({
@@ -14,8 +16,10 @@ import { VerificationModule } from './verification/verification.module'
 		SessionModule,
 		AuthModule,
 		VerificationModule,
-		PasswordRecoveryModule
+		PasswordRecoveryModule,
+		TotpModule,
+		DeactivateModule
 	],
-    exports:[UserModule]
+	exports: [UserModule]
 })
 export class AccountModule {}

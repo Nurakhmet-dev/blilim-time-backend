@@ -6,13 +6,13 @@ export interface LocationInfo {
 }
 
 export interface DeviceInfo {
-    browser: string
+	browser: string
 	os: string
 	type: string
 }
 
 export interface SessionMetadata {
-    location:LocationInfo
-    device:DeviceInfo
-    ip:string
+	location: LocationInfo
+	device: DeviceInfo
+	ip: string
 }
