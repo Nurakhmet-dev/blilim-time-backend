@@ -15,13 +15,18 @@ model User {
     name      String?
     avatarUrl String? @default("/assets/users/default-avatar.jpg") @map("avatar_url")
 
-    phone    String  @unique
-    email    String? @unique
+    phone    String @unique
+    email    String @unique
     password String
+
+    isVerified      Boolean @default(false) @map("is_verified")
+    isEmailVerified Boolean @default(false) @map("is_email_verified")
 
     role Role @default(USER)
 
     // Связи студента
+    tokens Token[]
+
     purchaseTests    Test[]
     purchaseSubjects Subject[]
     testResults      TestResult[]
@@ -31,10 +36,25 @@ model User {
     // Связи куратора
     managedGroups Group[] @relation("CuratorGroups")
 
-    createdAt DateTime @default(now())
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt() @map("updated_at")
 
     @@index([role]) // Индекс для быстрой фильтрации пользователей по ролям (админом)
     @@map("user")
+}
+
+model Token {
+    id String @id @default(uuid())
+
+    token     String    @unique
+    type      TokenType
+    expiresIn String    @map("expires_in")
+
+    userId String @map("user_id")
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAd DateTime @updatedAt() @map("updated_at")
 }
 
 // --- СТРУКТУРА ОБУЧЕНИЯ ---
@@ -145,21 +165,36 @@ enum Role {
     CURATOR
     ADMIN
     SUPER_ADMIN
+
+    @@map("role")
+}
+
+enum TokenType {
+    EMAIL_VERIFY
+    PASSWORD_RESET
+
+    @@map("token_types")
 }
 
 enum OptionsType {
     Multiple //выберите лучший ответ из предложенных (A, B, C, D).
     BOOLEAN // Верно/Неверно : Определите, является ли утверждение правильным или неправильным.
+
+    @@map("options_types")
 }
 
 enum Difficulty {
     EASY
     MEDIUM
     HARD
+
+    @@map("difficulty")
 }
 
 enum TestFor {
     ENT
     HOMEWORK
     QUIZ
+
+    @@map("test_for")
 }

@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config'
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { Authorization } from '@shared/decorators'
 import type { GqlContext } from '@shared/types/graphql-context.types'
@@ -7,7 +8,10 @@ import { SessionService } from './session.service'
 
 @Resolver('Session')
 export class SessionResolver {
-	public constructor(private readonly sessionService: SessionService) {}
+	public constructor(
+		private readonly sessionService: SessionService,
+		private readonly configService: ConfigService
+	) {}
 
 	@Authorization()
 	@Query(() => [SessionModel], { name: 'findSessionsByUser' })
@@ -18,12 +22,12 @@ export class SessionResolver {
 	@Authorization()
 	@Query(() => SessionModel, { name: 'findCurrentSession' })
 	public findCurrent(@Context() { req }: GqlContext) {
-		return this.sessionService.findCurrent(req)
+		return this.sessionService.findCurrent(req, this.configService)
 	}
 
 	@Mutation(() => Boolean, { name: 'clearSession' })
 	public clearSession(@Context() { req }: GqlContext) {
-		return this.sessionService.clearSession(req)
+		return this.sessionService.clearSession(req, this.configService)
 	}
 
 	@Authorization()
@@ -32,6 +36,6 @@ export class SessionResolver {
 		@Context() { req }: GqlContext,
 		@Args('id') id: string
 	) {
-		return this.sessionService.removeSession(req, id)
+		return this.sessionService.removeSession(req, id, this.configService)
 	}
 }

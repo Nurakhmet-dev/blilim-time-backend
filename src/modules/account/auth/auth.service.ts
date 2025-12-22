@@ -1,17 +1,19 @@
 import { verify } from 'argon2'
 import { Request } from 'express'
 
-import { User } from '@core/generated/client'
 import { PrismaService } from '@core/prisma/prisma.service'
-import { SessionService } from '@modules/session/session.service'
-import { CreateUserInput } from '@modules/user/inputs/create-user.input'
-import { UserService } from '@modules/user/user.service'
+import { SessionService } from '@modules/account/session/session.service'
+import { CreateUserInput } from '@modules/account/user/inputs/create-user.input'
+import { UserService } from '@modules/account/user/user.service'
+import { VerificationService } from '@modules/account/verification/verification.service'
 import {
+	BadRequestException,
 	ConflictException,
 	Injectable,
 	NotFoundException,
 	UnauthorizedException
 } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 
 import { LoginInput } from './inputs/login.input'
 
@@ -20,12 +22,12 @@ export class AuthService {
 	constructor(
 		private readonly prismaService: PrismaService,
 		private readonly userService: UserService,
-		private readonly sessionService: SessionService
+		private readonly sessionService: SessionService,
+		private readonly verificationService: VerificationService
 	) {}
 
-	private async checkUserExistence(
-		createUserInput: CreateUserInput
-	): Promise<void> {
+	// authentification
+	public async register(createUserInput: CreateUserInput) {
 		const isUserPhoneExists = await this.prismaService.user.findUnique({
 			where: { phone: createUserInput.phone }
 		})
@@ -37,14 +39,16 @@ export class AuthService {
 		})
 		if (isUserEmailExists)
 			throw new ConflictException('Этот почта зарегистрирован')
+
+		const user = await this.userService.create(createUserInput)
+
+		await this.verificationService.sendVerificationToken(user)
+
+		return true
 	}
 
-	public async register(createUserInput: CreateUserInput) {
-		this.checkUserExistence(createUserInput)
-		this.userService.create(createUserInput)
-	}
-
-	private async validateLoginInput(loginInput: LoginInput): Promise<User> {
+	// authorization
+	public async login(req: Request, loginInput: LoginInput) {
 		const user = await this.prismaService.user.findFirst({
 			where: {
 				OR: [
@@ -59,15 +63,17 @@ export class AuthService {
 		if (!isValidPassword)
 			throw new UnauthorizedException('Неверный почта или пароль')
 
-		return user
-	}
+		if (!user.isEmailVerified) {
+			await this.verificationService.sendVerificationToken(user)
+			throw new BadRequestException(
+				'Аккаунт не верифицирован. Пожалуйста, проверьте свою почту для подтверждения'
+			)
+		}
 
-	public async login(req: Request, loginInput: LoginInput) {
-		const user: User = await this.validateLoginInput(loginInput)
 		return await this.sessionService.save(req, user)
 	}
 
-	public async logout(req: Request) {
-		return await this.sessionService.destroy(req)
+	public async logout(req: Request, configService: ConfigService) {
+		return await this.sessionService.destroy(req, configService)
 	}
 }

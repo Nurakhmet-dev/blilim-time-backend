@@ -40,6 +40,12 @@ export class UserModel implements User {
 	@Field(() => String, { nullable: true })
 	groupId: string
 
+	@Field(() => Boolean)
+	isVerified: boolean
+
+	@Field(() => Boolean)
+	isEmailVerified: boolean
+
 	@Field(() => Date)
 	createdAt: Date
 

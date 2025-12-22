@@ -46,10 +46,7 @@ const detectDeviceType = (userAgent: string): string => {
 	return 'Unknown Device' // Если не удалось определить, возвращаем "Неизвестное устройство"
 }
 
-export const getSessionMetadata = (
-	req: Request
-	// userAgent: string
-): SessionMetadata => {
+export const getMetadata = (req: Request): SessionMetadata => {
 	const ip = IS_DEV_NODE ? '207.97.227.239' : req.ip
 	const location = geo.lookup(ip)
 
