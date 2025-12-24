@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TokenType, User } from '@core/generated/client'
-import type { PrismaService } from '@core/prisma/prisma.service'
+import type { PrismaService } from '@core/providers/prisma/prisma.service'
 
 import { ms } from './ms.ai.config'
 

@@ -5,7 +5,7 @@ import { parseBoolean } from 'src/shared/utils/parse-boolean.util'
 
 import { ConfigService } from '@nestjs/config'
 
-import { RedisService } from '../redis/redis.service'
+import { RedisService } from '../providers/redis/redis.service'
 
 export const getSessionConfig = (
 	config: ConfigService,

@@ -60,6 +60,8 @@ type Mutation {
   register(data: CreateUserInput!): Boolean!
   removeSession(id: String!): Boolean!
   resetPassword(data: ResetPasswordInput!): Boolean!
+  updateEmail(data: UpdateEmailInput!): Boolean!
+  updatePassword(data: UpdatePasswordInput!): Boolean!
   verifyAccount(data: VerificationInput!): Boolean!
 }
 
@@ -104,6 +106,16 @@ type SessionModel {
 type TotpModel {
   qrcodeUrl: String!
   secret: String!
+}
+
+input UpdateEmailInput {
+  email: String!
+}
+
+input UpdatePasswordInput {
+  newPassword: String!
+  newPasswordRepeat: String!
+  oldPassword: String!
 }
 
 type UserModel {

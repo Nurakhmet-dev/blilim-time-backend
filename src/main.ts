@@ -7,12 +7,12 @@ import { NestFactory } from '@nestjs/core'
 
 import { getCorsConfig } from './core/config/cors.config'
 import { getSessionConfig } from './core/config/session.config'
-import { CoreModule } from './core/core.module'
-import { RedisService } from './core/redis/redis.service'
+import { AppModule } from './app.module'
+import { RedisService } from './core/providers/redis/redis.service'
 
 async function start(): Promise<void> {
 	try {
-		const app = await NestFactory.create(CoreModule)
+		const app = await NestFactory.create(AppModule)
 		const config = app.get(ConfigService)
 		const redis = app.get(RedisService)
 		const port = config.getOrThrow<number>('APP_PORT') ?? 4000

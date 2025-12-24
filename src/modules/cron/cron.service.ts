@@ -1,5 +1,5 @@
-import { PrismaService } from '@core/prisma/prisma.service'
-import { MailService } from '@modules/libs/mail/mail.service'
+import { MailService } from '@core/providers/mail/mail.service'
+import { PrismaService } from '@core/providers/prisma/prisma.service'
 import { Injectable } from '@nestjs/common'
 import { Cron } from '@nestjs/schedule'
 

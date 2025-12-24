@@ -1,14 +1,12 @@
 import { getGraphQLConfig } from '@core/config/graphql.config'
-import { PrismaModule } from '@core/prisma/prisma.module'
-import { AccountModule } from '@modules/account/account.module'
-import { CronModule } from '@modules/cron/cron.module'
+import { MailModule } from '@core/providers/mail/mail.module'
+import { PrismaModule } from '@core/providers/prisma/prisma.module'
+import { RedisModule } from '@core/providers/redis/redis.module'
 import { ApolloDriver } from '@nestjs/apollo'
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { GraphQLModule } from '@nestjs/graphql'
 import { IS_DEV_NODE } from '@utils/is-dev.utils'
-
-import { RedisModule } from './redis/redis.module'
 
 @Module({
 	imports: [
@@ -26,8 +24,7 @@ import { RedisModule } from './redis/redis.module'
 
 		PrismaModule,
 		RedisModule,
-		AccountModule,
-		CronModule
+		MailModule
 	]
 })
 export class CoreModule {}

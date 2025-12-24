@@ -59,6 +59,8 @@ model Token {
 
     createdAt DateTime @default(now()) @map("created_at")
     updatedAd DateTime @updatedAt() @map("updated_at")
+
+    @@map("token")
 }
 
 // --- СТРУКТУРА ОБУЧЕНИЯ ---
@@ -71,6 +73,8 @@ model Subject {
     topics    Topic[]
     lessons   Lesson[]
     questions Question[]
+
+    @@map("subject")
 }
 
 model Topic {
@@ -95,6 +99,8 @@ model Lesson {
     topicId   String?
     topic     Topic?  @relation(fields: [topicId], references: [id])
     tests     Test[] // Связь с ДЗ
+
+    @@map("lesson")
 }
 
 // --- КОНТЕНТ ТЕСТОВ ---
