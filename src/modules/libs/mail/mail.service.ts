@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config'
 import { render } from '@react-email/components'
 import { SessionMetadata } from '@shared/types/session-metadata.types'
 
+import AccountDeactivated from './templates/account-deactivated.template'
 import Deactivate from './templates/deactivate.template'
 import PasswordRecovery from './templates/password-recovery.template'
 import VerificationTemplate from './templates/verification.template'
@@ -14,6 +15,13 @@ export class MailService {
 		private readonly mailerService: MailerService,
 		private readonly configService: ConfigService
 	) {}
+
+	public async sendAccountDeletion(email: string) {
+		const domain = this.configService.getOrThrow<string>('ALLOWED_ORIGIN')
+		const html = await render(AccountDeactivated({ domain }))
+
+		return await this.sendMail(email, 'Аккаунт удалён', html)
+	}
 
 	public async sendVerificationToken(email: string, token: string) {
 		const domain = this.configService.getOrThrow<string>('ALLOWED_ORIGIN')

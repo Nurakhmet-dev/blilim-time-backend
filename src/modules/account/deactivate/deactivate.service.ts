@@ -27,7 +27,7 @@ export class DeactivateService {
 		private readonly sessionService: SessionService
 	) {}
 
-	public async deavtivate(
+	public async deactivate(
 		req: Request,
 		user: User,
 		input: DeactivateAccountInput
@@ -39,14 +39,12 @@ export class DeactivateService {
 		if (user.email !== email || !isValidPassword)
 			throw new BadRequestException('Неверная почта или пароль')
 
-		if (user.isTotpEnable) {
-			if (!pin) {
-				await this.sendDeactivateToken(req, user)
+		if (!pin) {
+			await this.sendDeactivateToken(req, user)
 
-				return { message: 'Требуется код подверждения' }
-			}
-			await this.validateDeactivateToken(req, pin)
+			return { message: 'Требуется код подверждения' }
 		}
+		await this.validateDeactivateToken(req, pin)
 
 		return { user }
 	}
@@ -91,7 +89,7 @@ export class DeactivateService {
 		const verificationToken = await generateToken(
 			this.prismaService,
 			user,
-			TokenType.EMAIL_VERIFY
+			TokenType.DEACTIVATE
 		)
 
 		const metadata = getMetadata(req)

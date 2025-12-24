@@ -70,8 +70,6 @@ input NewPasswordInput {
 }
 
 type Query {
-  findAll: [UserModel!]!
-  findById: UserModel!
   findCurrentSession: SessionModel!
   findSessionsByUser: [SessionModel!]!
   generateTotpSecret: TotpModel!
