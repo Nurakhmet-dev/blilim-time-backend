@@ -4,10 +4,10 @@ import type { User } from '@core/generated/client'
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql'
 import type { GqlContext } from '@shared/types/graphql-context.types'
 
-import { AuthModel } from '../../auth/models/auth.model'
+import { AuthModel } from '../auth/models/auth.model'
 
 import { DeactivateService } from './deactivate.service'
-import { DeactivateAccountInput } from './inputs/deactivate-account.input'
+import { DeactivateAccountInput } from './inputs'
 
 @Resolver('Deactivate')
 export class DeactivateResolver {

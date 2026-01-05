@@ -1,12 +1,18 @@
 import { hash, verify } from 'argon2'
+import { createWriteStream } from 'fs'
+import type { FileUpload } from 'graphql-upload-ts'
+import { join } from 'path'
 
 import type { User } from '@core/generated/client'
 import { PrismaService } from '@core/providers/prisma/prisma.service'
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 
-import type { CreateUserInput } from './inputs/create-user.input'
-import type { UpdateEmailInput } from './inputs/update-email.input'
-import type { UpdatePasswordInput } from './inputs/update-password.input'
+import type {
+	CreateUserInput,
+	UpdateEmailInput,
+	UpdatePasswordInput,
+	UploadFileInput
+} from './inputs'
 
 @Injectable()
 export class UserService {
@@ -68,6 +74,20 @@ export class UserService {
 		})
 
 		return true
+	}
+
+	public async updateAvatar(user: User, { file }: UploadFileInput) {
+		const { createReadStream, filename } = file
+		return new Promise((resolve, reject) => {
+			createReadStream()
+				.pipe(
+					createWriteStream(
+						join(process.cwd(), `./uploads/${filename}`)
+					)
+				)
+				.on('finish', () => resolve(true))
+				.on('error', () => reject(false))
+		})
 	}
 
 	public remove(id: number) {

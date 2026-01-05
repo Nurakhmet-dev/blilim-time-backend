@@ -5,6 +5,7 @@ import type { User } from '@core/generated/client'
 import { TokenType } from '@core/generated/enums'
 import { MailService } from '@core/providers/mail/mail.service'
 import { PrismaService } from '@core/providers/prisma/prisma.service'
+import { SessionService } from '@modules/session/session.service'
 import {
 	BadRequestException,
 	Injectable,
@@ -14,9 +15,7 @@ import { ConfigService } from '@nestjs/config'
 import { generateToken } from '@shared/utils/generate-token.util'
 import { getMetadata } from '@shared/utils/session-metadata.util'
 
-import { SessionService } from '../../secure/session/session.service'
-
-import { DeactivateAccountInput } from './inputs/deactivate-account.input'
+import { DeactivateAccountInput } from './inputs'
 
 @Injectable()
 export class DeactivateService {

@@ -3,8 +3,8 @@ import { Authorized } from '@core/decorators/authorized.decorator'
 import type { User } from '@core/generated/client'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 
-import { EnableTotpInput } from './inputs/enable-totp.input'
-import { TotpModel } from './models/totp.model'
+import { EnableTotpInput } from './inputs'
+import { TotpModel } from './models'
 import { TotpService } from './totp.service'
 
 @Resolver('Totp')

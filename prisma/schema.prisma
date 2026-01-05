@@ -13,7 +13,7 @@ model User {
     id String @id @default(uuid())
 
     name      String?
-    avatarUrl String? @default("/assets/users/default-avatar.jpg") @map("avatar_url")
+    avatarUrl String? @default("") @map("avatar_url")
 
     phone    String @unique
     email    String @unique
@@ -32,7 +32,7 @@ model User {
     tokens Token[]
 
     purchaseTests    Test[]
-    purchaseSubjects Subject[]
+    //purchaseSubjects Subject[]
     testResults      TestResult[]
     groupId          String?      @map("group_id")
     group            Group?       @relation("StudentInGroup", fields: [groupId], references: [id])
@@ -65,14 +65,14 @@ model Token {
 
 // --- СТРУКТУРА ОБУЧЕНИЯ ---
 model Subject {
-    id        String     @id @default(uuid())
-    title     String     @unique
-    price     Int        @default(0)
-    userId    String     @map("user_id")
-    user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-    topics    Topic[]
-    lessons   Lesson[]
-    questions Question[]
+    id     String @id @default(uuid())
+    title  String @unique
+    price  Int    @default(0)
+    //userId String @map("user_id")
+    //user   User[]
+    //topics    Topic[]
+    //lessons   Lesson[]
+    //questions Question[]
 
     @@map("subject")
 }
@@ -81,7 +81,7 @@ model Topic {
     id        String     @id @default(uuid())
     title     String
     subjectId String     @map("subject_id")
-    subject   Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+    //subject   Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
     lessons   Lesson[]
     questions Question[]
 
@@ -95,7 +95,7 @@ model Lesson {
     videoUrl  String?
     content   String? @db.Text
     subjectId String
-    subject   Subject @relation(fields: [subjectId], references: [id])
+    //subject   Subject @relation(fields: [subjectId], references: [id])
     topicId   String?
     topic     Topic?  @relation(fields: [topicId], references: [id])
     tests     Test[] // Связь с ДЗ
@@ -113,7 +113,7 @@ model Question {
     options       String[] // Доступно в PostgreSQL (массив строк)
     correctAnswer String
     subjectId     String
-    subject       Subject     @relation(fields: [subjectId], references: [id])
+    //subject       Subject     @relation(fields: [subjectId], references: [id])
     topicId       String?
     topic         Topic?      @relation(fields: [topicId], references: [id])
     tests         Test[]      @relation("TestToQuestion")

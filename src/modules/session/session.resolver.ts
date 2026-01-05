@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config'
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql'
 import type { GqlContext } from '@shared/types/graphql-context.types'
 
-import { SessionModel } from './models/session.model'
+import { SessionModel } from './models'
 import { SessionService } from './session.service'
 
 @Resolver('Session')

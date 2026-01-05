@@ -7,6 +7,11 @@ type AuthModel {
   user: UserModel
 }
 
+input CreateSubjectInput {
+  price: Float!
+  title: String!
+}
+
 input CreateUserInput {
   email: String!
   name: String!
@@ -51,6 +56,7 @@ input LoginInput {
 
 type Mutation {
   clearSession: Boolean!
+  createSubject(data: CreateSubjectInput!): Boolean!
   deactivateAccount(data: DeactivateAccountInput!): AuthModel!
   disableTotp: Boolean!
   enableTotp(data: EnableTotpInput!): Boolean!
@@ -60,9 +66,10 @@ type Mutation {
   register(data: CreateUserInput!): Boolean!
   removeSession(id: String!): Boolean!
   resetPassword(data: ResetPasswordInput!): Boolean!
+  updateAvatar(data: UploadFileInput!): Boolean!
   updateEmail(data: UpdateEmailInput!): Boolean!
   updatePassword(data: UpdatePasswordInput!): Boolean!
-  verifyAccount(data: VerificationInput!): Boolean!
+  verifyEmail(data: VerificationInput!): AuthModel!
 }
 
 input NewPasswordInput {
@@ -75,6 +82,7 @@ type Query {
   findCurrentSession: SessionModel!
   findSessionsByUser: [SessionModel!]!
   generateTotpSecret: TotpModel!
+  getSubjects: [SubjectModel!]!
 }
 
 input ResetPasswordInput {
@@ -103,6 +111,14 @@ type SessionModel {
   userId: String!
 }
 
+type SubjectModel {
+  id: ID!
+  price: Float!
+  title: String!
+  user: UserModel!
+  userId: String!
+}
+
 type TotpModel {
   qrcodeUrl: String!
   secret: String!
@@ -116,6 +132,13 @@ input UpdatePasswordInput {
   newPassword: String!
   newPasswordRepeat: String!
   oldPassword: String!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input UploadFileInput {
+  file: Upload!
 }
 
 type UserModel {

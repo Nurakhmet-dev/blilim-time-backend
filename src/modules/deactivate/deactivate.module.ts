@@ -1,4 +1,4 @@
-import { SessionModule } from '@modules/secure/session/session.module'
+import { SessionModule } from '@modules/session/session.module'
 import { Module } from '@nestjs/common'
 
 import { DeactivateResolver } from './deactivate.resolver'

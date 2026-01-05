@@ -5,7 +5,7 @@ import { TOTP } from 'otpauth'
 import { TokenType } from '@core/generated/enums'
 import { MailService } from '@core/providers/mail/mail.service'
 import { PrismaService } from '@core/providers/prisma/prisma.service'
-import { SessionService } from '@modules/secure/session/session.service'
+import { SessionService } from '@modules/session/session.service'
 import { CreateUserInput } from '@modules/user/inputs/create-user.input'
 import { UserService } from '@modules/user/user.service'
 import { VerificationService } from '@modules/verification/verification.service'
@@ -18,12 +18,10 @@ import {
 	UnauthorizedException
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-
-import { LoginInput } from './inputs/login.input'
-import { NewPasswordInput } from './inputs/new-password.input'
-import { ResetPasswordInput } from './inputs/reset-password.input'
-import { getMetadata } from '@shared/utils/session-metadata.util'
 import { generateToken } from '@shared/utils/generate-token.util'
+import { getMetadata } from '@shared/utils/session-metadata.util'
+
+import { LoginInput, NewPasswordInput, ResetPasswordInput } from './inputs'
 
 @Injectable()
 export class AuthService {

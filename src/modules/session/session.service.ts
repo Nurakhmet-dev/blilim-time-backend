@@ -11,7 +11,7 @@ import {
 import { ConfigService } from '@nestjs/config'
 import { getMetadata } from '@shared/utils/session-metadata.util'
 
-import { SessionModel } from './models/session.model'
+import { SessionModel } from './models'
 
 @Injectable()
 export class SessionService {

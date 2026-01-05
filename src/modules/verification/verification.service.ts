@@ -4,7 +4,7 @@ import { User } from '@core/generated/client'
 import { TokenType } from '@core/generated/enums'
 import { MailService } from '@core/providers/mail/mail.service'
 import { PrismaService } from '@core/providers/prisma/prisma.service'
-import { SessionService } from '@modules/secure/session/session.service'
+import { SessionService } from '@modules/session/session.service'
 import {
 	BadRequestException,
 	Injectable,
@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common'
 import { generateToken } from '@shared/utils/generate-token.util'
 
-import { VerificationInput } from './inputs/verivication.input'
+import type { VerificationInput } from './inputs'
 
 @Injectable()
 export class VerificationService {
@@ -53,8 +53,7 @@ export class VerificationService {
 			}
 		})
 
-		await this.sessionService.save(req, user)
-		return true
+		return await this.sessionService.save(req, user)
 	}
 
 	public async sendVerificationToken(user: User) {

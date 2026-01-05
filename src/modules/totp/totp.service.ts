@@ -7,7 +7,7 @@ import { User } from '@core/generated/client'
 import { PrismaService } from '@core/providers/prisma/prisma.service'
 import { BadRequestException, Injectable } from '@nestjs/common'
 
-import { EnableTotpInput } from './inputs/enable-totp.input'
+import { EnableTotpInput } from './inputs'
 
 @Injectable()
 export class TotpService {
